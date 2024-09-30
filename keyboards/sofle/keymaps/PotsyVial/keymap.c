@@ -37,7 +37,7 @@ enum sofle_layers {
 };
 
 enum custom_keycodes {
-    KC_QWERTY = QK_USER,
+    KC_QWERTY = QK_KB_0,
     KC_COLEMAK,
     KC_PRVWD,
     KC_NXTWD,

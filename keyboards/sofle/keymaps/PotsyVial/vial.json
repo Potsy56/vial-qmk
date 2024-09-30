@@ -3,6 +3,33 @@
     "vendorId": "0xFC32",
     "productId": "0x0287",
     "matrix": { "rows": 10, "cols": 6 },
+    "lighting": "vialrgb",
+	"customKeycodes": [
+		{"name": "KC_QWERTY",
+		"title": "QWERTY Layout",
+		"shortName": "QWE\nRTY"
+		},
+		{"name": "KC_COLEMAK",
+		"title": "COLEMAK layout",
+		"shortName": "COLE\nMAK"
+		},
+		{"name": "KC_PRVWD",
+		"title": "Prev. Word",
+		"shortName": "Prev.\nWord"
+		},
+		{"name": "KC_NXTWD",
+		"title": "Next Word",
+		"shortName": "Next\nWord"
+		},
+		{"name": "KC_LSTRT",
+		"title": "Line Start",
+		"shortName": "Line\nStart"
+		},
+		{"name": "KC_LEND",
+		"title": "Line End",
+		"shortName": "Line\nEnd"
+		}		
+		],
 	"layouts": {
         "keymap": [
             {
