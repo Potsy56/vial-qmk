@@ -1,0 +1,9 @@
+TRI_LAYER_ENABLE = yes
+ENCODER_MAP_ENABLE = yes
+RGB_MATRIX_ENABLE = yes
+
+VIA_ENABLE = yes
+VIAL_ENABLE = yes
+
+#Convert for RP2040
+CONVERT_TO=promicro_rp2040
