@@ -4,6 +4,7 @@ RGB_MATRIX_ENABLE = yes
 
 VIA_ENABLE = yes
 VIAL_ENABLE = yes
+VIALRGB_ENABLE = yes
 
 #Convert for RP2040
 CONVERT_TO=promicro_rp2040

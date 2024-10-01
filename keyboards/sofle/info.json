@@ -91,7 +91,8 @@
             "solid_multisplash": true
         },
         "default":{
-            "animation": "riverflow"
+            "animation": "riverflow",
+            "hue": 15
         }
         "layout": [
             {"x": 96, "y": 40, "flags": 8},
