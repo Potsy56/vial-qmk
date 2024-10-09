@@ -92,8 +92,8 @@
         },
         "default":{
             "animation": "riverflow",
-            "hue": 15
-        }
+            "hue": 8
+        },
         "layout": [
             {"x": 96, "y": 40, "flags": 8},
             {"x": 16, "y": 20, "flags": 2},
