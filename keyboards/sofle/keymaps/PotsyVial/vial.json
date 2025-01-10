@@ -28,6 +28,18 @@
 		{"name": "KC_LEND",
 		"title": "Line End",
 		"shortName": "Line\nEnd"
+		},
+		{"name": "ATAB_F",
+		"title": "Alt+Tab (Forwards)",
+		"shortName": "Alt+Tab\nForwards"
+		},
+		{"name": "ATAB_R",
+		"title": "Alt+Tab (Reverse)",
+		"shortName": "Alt+Tab\nReverse"
+		},
+		{"name": "DEL_WORD",
+		"title": "Delete Word (if holding shift)",
+		"shortName": "Delete\nWord"
 		}
 		],
 	"layouts": {

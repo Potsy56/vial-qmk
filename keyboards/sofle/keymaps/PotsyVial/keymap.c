@@ -36,13 +36,25 @@ enum sofle_layers {
 };
 
 enum custom_keycodes {
-    KC_QWERTY = QK_KB_0,
-    KC_COLEMAK,
-    KC_PRVWD,
-    KC_NXTWD,
-    KC_LSTRT,
-    KC_LEND
+	KC_QWERTY = QK_KB_0,	//QWERTY layout
+	KC_COLEMAK,				//COLEMAK layout
+	KC_PRVWD,				//go to previous word
+	KC_NXTWD,				//go to next word
+	KC_LSTRT,				//go to start of line
+	KC_LEND,				//go to end of line
+	ATAB_F					//Alt+Tab -> Forwards
+	ATAB_R,					//Alt+Tab -> Reverse
+	DEL_WORD,				//Shift+Backspace to delete whole word (**swap KC_BPSC with this**)
 };
+
+//Variables for custom keycodes
+#ifdef SUPER_ALT_TAB_ENABLE
+	bool is_alt_tab_active = false; // Super Alt Tab Code
+	uint16_t alt_tab_timer = 0;
+#endif
+bool lshift_held = false;	// LShift Backspace Delete whole Word Code
+bool rshift_held = false;	// RShift Backspace Delete whole Word Code
+static uint16_t held_shift = 0;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /*
@@ -63,9 +75,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [0] = LAYOUT(
   KC_GRV,   KC_1,   KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,  KC_BSPC,
   KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,  KC_BSPC,
-  KC_LSFT,  KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN,  KC_QUOT,
-  KC_LCTL,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, KC_MUTE,   XXXXXXX, KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
-                 KC_LGUI, KC_LALT, TL_LOWR, TL_UPPR,  KC_SPC,    KC_ENT,KC_LEFT,KC_RGHT,  KC_UP, KC_DOWN
+  KC_LCTL,  LGUI_T(KC_A), LALT_T(KC_S), LSFT_T(KC_D), LCTL_T(KC_F),      KC_G,    KC_H,    RCTL_T(KC_J), RSFT_T(KC_K), LALT_T(KC_L), RGUI_T(KC_SCLN),  KC_QUOT,
+  LSFT_T(KC_LBRC),  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, KC_MUTE,   XXXXXXX, KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  RSFT_T(KC_RBRC),
+                 KC_LGUI, KC_LALT, KC_SPC, TL_LOWR,  KC_SPC,    KC_ENT, TL_UPPR, KC_SPC,  KC_LEFT, KC_RGHT
 ),
 
 /*
@@ -158,8 +170,84 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 
+
+void matrix_scan_user(void) {
+	#ifdef SUPER_ALT_TAB_ENABLE
+		if (is_alt_tab_active) {	//Allows for use of super alt tab.
+			if (timer_elapsed(alt_tab_timer) > 1000) {
+				unregister_code(KC_LALT);
+				is_alt_tab_active = false;
+			}
+		}
+	#endif
+	#ifdef ENCODER_ENABLE
+		encoder_action_unregister();
+	#endif
+}
+
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+		#ifdef SUPER_ALT_TAB_ENABLE
+		case ATABF:	//Alt tab forwards
+			if (record->event.pressed) {
+				if (!is_alt_tab_active) {
+					is_alt_tab_active = true;
+					register_code(KC_LALT);
+				}
+					alt_tab_timer = timer_read();
+					register_code(KC_TAB);
+				} else {
+					unregister_code(KC_TAB);
+				}
+			return true;
+		case ATABR:	//Alt tab reverse
+			if (record->event.pressed) {
+				if (!is_alt_tab_active) {
+					is_alt_tab_active = true;
+					register_code(KC_LALT);
+				}
+					alt_tab_timer = timer_read();
+					register_code(KC_LSHIFT);
+					register_code(KC_TAB);
+				} else {
+					unregister_code(KC_LSHIFT);
+					unregister_code(KC_TAB);
+				}
+			return true;
+		#endif
+
+		case KC_RSFT: //Shift Backspace to Delete Whole Word. Inspired by Hellsingcoder.
+			rshift_held = record->event.pressed;
+			held_shift = keycode;
+			return true;
+		case KC_LSFT:
+			lshift_held = record->event.pressed;
+			held_shift = keycode;
+			return true;
+		case SBS:
+			if (record->event.pressed) { //When left shift is held and backspace pressed, one whole word will be deleted (left).
+				if (lshift_held) {
+					unregister_code(held_shift);
+					register_code(KC_LCTL);
+					register_code(KC_BSPC);
+				} else if (rshift_held) { //When left shift is held and backspace pressed, one whole word will be deleted (right).
+					unregister_code(held_shift);
+					register_code(KC_LCTL);
+					register_code(KC_DEL);
+				} else {
+					register_code(KC_BSPC);
+				}
+			} else {
+				unregister_code(KC_BSPC);
+				unregister_code(KC_DEL);
+				unregister_code(KC_LCTL);
+				if (lshift_held || rshift_held) {
+					register_code(held_shift);
+				}
+			}
+			return false;
+
         case KC_QWERTY:
             if (record->event.pressed) {
                 set_single_persistent_default_layer(_QWERTY);
