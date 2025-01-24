@@ -17,16 +17,6 @@
 
 #include QMK_KEYBOARD_H
 
-#ifdef ENCODER_MAP_ENABLE
-const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-    [0] = { ENCODER_CCW_CW(KC_PGDN, KC_PGUP),           ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
-    [1] = { ENCODER_CCW_CW(_______, _______),           ENCODER_CCW_CW(_______, _______) },
-    [2] = { ENCODER_CCW_CW(RGB_HUD, RGB_HUI),           ENCODER_CCW_CW(RGB_SAD, RGB_SAI) },
-    [3] = { ENCODER_CCW_CW(RGB_VAD, RGB_VAI),           ENCODER_CCW_CW(RGB_RMOD, RGB_MOD)},
-    [4] = { ENCODER_CCW_CW(_______, _______),           ENCODER_CCW_CW(_______, _______) }
-};
-#endif
-
 enum sofle_layers {
     _QWERTY,
     _COLEMAK,
@@ -42,10 +32,20 @@ enum custom_keycodes {
 	KC_NXTWD,				//go to next word
 	KC_LSTRT,				//go to start of line
 	KC_LEND,				//go to end of line
-	ATAB_F					//Alt+Tab -> Forwards
+	ATAB_F,					//Alt+Tab -> Forwards
 	ATAB_R,					//Alt+Tab -> Reverse
 	DEL_WORD,				//Shift+Backspace to delete whole word (**swap KC_BPSC with this**)
 };
+
+#ifdef ENCODER_MAP_ENABLE
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
+    [0] = { ENCODER_CCW_CW(KC_PGDN, KC_PGUP),           ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
+    [1] = { ENCODER_CCW_CW(_______, _______),           ENCODER_CCW_CW(_______, _______) },
+    [2] = { ENCODER_CCW_CW( ATAB_R,  ATAB_F),           ENCODER_CCW_CW(RGB_SAD, RGB_SAI) },
+    [3] = { ENCODER_CCW_CW(RGB_VAD, RGB_VAI),           ENCODER_CCW_CW(RGB_RMOD, RGB_MOD)},
+    [4] = { ENCODER_CCW_CW(_______, _______),           ENCODER_CCW_CW(_______, _______) }
+};
+#endif
 
 //Variables for custom keycodes
 #ifdef SUPER_ALT_TAB_ENABLE
@@ -180,16 +180,13 @@ void matrix_scan_user(void) {
 			}
 		}
 	#endif
-	#ifdef ENCODER_ENABLE
-		encoder_action_unregister();
-	#endif
 }
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
 		#ifdef SUPER_ALT_TAB_ENABLE
-		case ATABF:	//Alt tab forwards
+		case ATAB_F:	//Alt tab forwards
 			if (record->event.pressed) {
 				if (!is_alt_tab_active) {
 					is_alt_tab_active = true;
@@ -201,17 +198,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 					unregister_code(KC_TAB);
 				}
 			return true;
-		case ATABR:	//Alt tab reverse
+		case ATAB_R:	//Alt tab reverse
 			if (record->event.pressed) {
 				if (!is_alt_tab_active) {
 					is_alt_tab_active = true;
 					register_code(KC_LALT);
 				}
 					alt_tab_timer = timer_read();
-					register_code(KC_LSHIFT);
+					register_mods(mod_config(MOD_LSFT));
 					register_code(KC_TAB);
 				} else {
-					unregister_code(KC_LSHIFT);
+					unregister_mods(mod_config(MOD_LSFT));
 					unregister_code(KC_TAB);
 				}
 			return true;
@@ -225,7 +222,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 			lshift_held = record->event.pressed;
 			held_shift = keycode;
 			return true;
-		case SBS:
+		case DEL_WORD:
 			if (record->event.pressed) { //When left shift is held and backspace pressed, one whole word will be deleted (left).
 				if (lshift_held) {
 					unregister_code(held_shift);
