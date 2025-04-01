@@ -1,5 +1,5 @@
 {
-    "name": "Sofle",
+    "name": "SofleRGB",
     "vendorId": "0xFC32",
     "productId": "0x0287",
     "matrix": { "rows": 10, "cols": 6 },
@@ -36,17 +36,13 @@
 		{"name": "ATAB_R",
 		"title": "Alt+Tab (Reverse)",
 		"shortName": "Alt+Tab\nReverse"
-		},
-		{"name": "DEL_WORD",
-		"title": "Delete Word (if holding shift)",
-		"shortName": "Delete\nWord"
 		}
 		],
 	"layouts": {
         "keymap": [
             {
-                "name": "SofleKeyboard",
-                "author": "Josef Adamcik",
+                "name": "SofleRGB",
+                "author": "Potsy",
                 "switchMount": "cherry"
             },
             [

@@ -1,5 +1,5 @@
 {
-    "keyboard_name": "Sofle",
+    "keyboard_name": "SofleRGB",
     "features": {
         "bootmagic": true,
         "extrakey": true,
@@ -25,6 +25,7 @@
         },
         "transport": {
             "sync": {
+				"layer_state":true,
                 "matrix_state": true
             }
         }
